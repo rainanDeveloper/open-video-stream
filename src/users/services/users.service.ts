@@ -34,4 +34,14 @@ export class UsersService {
 
     return transformedDto;
   }
+
+  async create(dto: CreateUserDto): Promise<User> {
+    const transformedUser = await this.transformBody(dto);
+
+    const newUser = this.userRepository.create(transformedUser);
+
+    const createdUser = await this.userRepository.save(newUser);
+
+    return createdUser;
+  }
 }

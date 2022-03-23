@@ -14,6 +14,12 @@ const userList: User[] = [
     email: 'erdman.nova@oberbrunner.com',
     password: 'Q57YHtRDcJ8xZ6uTBSpih',
   }),
+  new User({
+    id: 2,
+    login: 'HootPotatoes',
+    email: 'schuppe.cara@yahoo.com',
+    password: 'LJ2hxWAm67SBJaUpjCEsd',
+  }),
 ];
 
 const CONFIG_VALUES = {
@@ -29,7 +35,13 @@ describe('UsersService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         UsersService,
-        { provide: getRepositoryToken(User), useValue: {} },
+        {
+          provide: getRepositoryToken(User),
+          useValue: {
+            create: jest.fn().mockReturnValue(userList[0]),
+            save: jest.fn().mockResolvedValue(userList[0]),
+          },
+        },
         {
           provide: ConfigService,
           useValue: {
@@ -87,6 +99,39 @@ describe('UsersService', () => {
         email: userDto.email,
         password: expect.any(String),
       });
+    });
+  });
+
+  describe('create', () => {
+    it('should crerate a user successfully', async () => {
+      // Arrange
+      const userDto: CreateUserDto = {
+        login: 'Colossalmann',
+        email: 'schmeler.lonie@hotmail.com',
+        password: 'HZnFw4HX25PRTEVNDmrov',
+      };
+
+      // Act
+      const result = await userService.create(userDto);
+
+      // Assert
+      expect(result).toEqual(userList[0]);
+      expect(userRepository.create).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an error when save method on userRepository fails', () => {
+      // Arrange
+      const userDto: CreateUserDto = {
+        login: 'EfficaciousPotatoes',
+        email: 'joannie.rutherford@dickens.com',
+        password: '28FhbdNNuuTxT57DDbzdZ',
+      };
+
+      jest.spyOn(userRepository, 'save').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(userService.create(userDto)).rejects.toThrowError();
     });
   });
 });
