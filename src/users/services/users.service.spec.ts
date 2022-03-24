@@ -6,6 +6,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 const userList: User[] = [
   new User({
@@ -40,6 +41,7 @@ describe('UsersService', () => {
           useValue: {
             create: jest.fn().mockReturnValue(userList[0]),
             save: jest.fn().mockResolvedValue(userList[0]),
+            findOne: jest.fn().mockResolvedValue(userList[0]),
           },
         },
         {
@@ -132,6 +134,56 @@ describe('UsersService', () => {
 
       // Assert
       expect(userService.create(userDto)).rejects.toThrowError();
+    });
+  });
+
+  describe('update', () => {
+    it('should update successfully a user', async () => {
+      // Arrange
+      const updateUserDto: UpdateUserDto = {
+        login: 'Yappystrom',
+        email: 'wledner@bode.com',
+        password: '3ryPb66Y4F5Ypq5cLVFKfp',
+      };
+      // Act
+      const result = await userService.update(userList[0].id, updateUserDto);
+      // Assert
+      expect(result).toEqual(userList[0]);
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('shoudl throw an error when method findOne on userRepository fails', () => {
+      // Arrange
+      const updateUserDto: UpdateUserDto = {
+        login: 'fr4nk3lh1d30u5',
+        email: 'vgrimes@west.com',
+        password: '36WDxihke3k8ms5nxvLcBR',
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(
+        userService.update(userList[0].id, updateUserDto),
+      ).rejects.toThrowError();
+    });
+
+    it('shoudl throw an error when method save on userRepository fails', () => {
+      // Arrange
+      const updateUserDto: UpdateUserDto = {
+        login: 'FrankelTheWry',
+        email: 'glennie.cronin@gmail.com',
+        password: 'aEM7j4BT5kY6UjjNNwHUtJ',
+      };
+
+      jest.spyOn(userRepository, 'save').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(
+        userService.update(userList[0].id, updateUserDto),
+      ).rejects.toThrowError();
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
     });
   });
 });
