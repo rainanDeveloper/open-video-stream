@@ -47,9 +47,7 @@ export class UsersService {
   }
 
   async update(id: number, dto: UpdateUserDto): Promise<User> {
-    const userFinded: User = await this.userRepository.findOne(id);
-
-    if (!userFinded) throw new NotFoundException(`User ${id} not found!`);
+    const userFinded: User = await this.findOne(id);
 
     userFinded.login = dto?.login || userFinded.login;
     userFinded.email = dto?.email || userFinded.email;
@@ -65,5 +63,11 @@ export class UsersService {
     if (!userFinded) throw new NotFoundException(`User ${id} not found!`);
 
     return userFinded;
+  }
+
+  async delete(id: number) {
+    await this.findOne(id);
+
+    return await this.userRepository.delete(id);
   }
 }
