@@ -43,6 +43,7 @@ describe('UsersService', () => {
             create: jest.fn().mockReturnValue(userList[0]),
             save: jest.fn().mockResolvedValue(userList[0]),
             findOne: jest.fn().mockResolvedValue(userList[0]),
+            delete: jest.fn(),
           },
         },
         {
@@ -228,6 +229,41 @@ describe('UsersService', () => {
 
       // Assert
       expect(userService.findOne(userList[0].id)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('delete', () => {
+    it('should delete a user successfully', async () => {
+      // Act
+      await userService.delete(userList[0].id);
+
+      // Assert
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(userRepository.delete).toHaveBeenCalledTimes(1);
+    });
+    it('should throw an error when the method findOne on userRepository fails', () => {
+      // Arrange
+      jest.spyOn(userRepository, 'findOne').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(userService.delete(userList[0].id)).rejects.toThrowError();
+    });
+    it('should throw an error when method delete on userRepository fails', () => {
+      // Arrange
+      jest.spyOn(userRepository, 'delete').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(userService.delete(userList[0].id)).rejects.toThrowError();
+    });
+    it('should throw a NotFoundException when method findOne on userRepository does not finds a user', () => {
+      // Arrange
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
+
+      // Assert
+      expect(userService.delete(userList[0].id)).rejects.toThrow(
         NotFoundException,
       );
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
