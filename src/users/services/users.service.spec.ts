@@ -7,6 +7,7 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { NotFoundException } from '@nestjs/common';
 
 const userList: User[] = [
   new User({
@@ -169,7 +170,7 @@ describe('UsersService', () => {
       ).rejects.toThrowError();
     });
 
-    it('shoudl throw an error when method save on userRepository fails', () => {
+    it('should throw an error when method save on userRepository fails', () => {
       // Arrange
       const updateUserDto: UpdateUserDto = {
         login: 'FrankelTheWry',
@@ -183,6 +184,52 @@ describe('UsersService', () => {
       expect(
         userService.update(userList[0].id, updateUserDto),
       ).rejects.toThrowError();
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an NotFoundException when the method findOne does not finds a user', () => {
+      // Arrange
+      const updateUserDto: UpdateUserDto = {
+        login: 'Jitterystrom',
+        email: 'vhintz@hirthe.com',
+        password: 'eoAcqaGf8iMgVPM8j4Bn7N',
+      };
+
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
+
+      // Assert
+      expect(userService.update(userList[0].id, updateUserDto)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should find a user', async () => {
+      // Act
+      const result = await userService.findOne(userList[0].id);
+      // Assert
+      expect(result).toEqual(userList[0]);
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an error when the method findOne on userRepository fails', () => {
+      // Arrange
+      jest.spyOn(userRepository, 'findOne').mockRejectedValueOnce(new Error());
+
+      // Assert
+      expect(userService.findOne(userList[0].id)).rejects.toThrowError();
+    });
+
+    it('should throw an NotFoundException when the method findOne does not finds a user', () => {
+      // Arrange
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(undefined);
+
+      // Assert
+      expect(userService.findOne(userList[0].id)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
     });
   });
