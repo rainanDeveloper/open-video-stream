@@ -91,6 +91,17 @@
     "typescript": "^4.3.5"
   },
   "jest": {
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/migrations/*",
+      "<rootDir>/common/services/mail/*",
+      ".module.ts",
+      ".entity.ts",
+      ".dto.ts",
+      "main.ts"
+    ],
+    "testPathIgnorePatterns" : [
+      "<rootDir>/common/services/mail/*"
+    ],
     "moduleFileExtensions": [
       "js",
       "json",
