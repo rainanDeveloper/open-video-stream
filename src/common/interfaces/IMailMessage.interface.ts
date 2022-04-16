@@ -1,5 +1,10 @@
+export interface IEmailAddress {
+  email: string;
+  name: string;
+}
+
 export interface IEmailMessage {
-  to: string;
+  to: IEmailAddress;
   subject: string;
 }
 

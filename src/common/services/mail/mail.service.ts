@@ -36,8 +36,14 @@ export class MailService {
       return;
     }
     const mailMessage: Mail.Options = {
-      from: this.config.get('MAIL_FROM'),
-      to: message.to,
+      from: {
+        name: this.config.get('MAIL_FROM_NAME'),
+        address: this.config.get('MAIL_FROM_ADDRESS'),
+      },
+      to: {
+        name: message.to.name,
+        address: message.to.email,
+      },
       subject: message.subject,
       html: message.body,
     };
@@ -49,7 +55,7 @@ export class MailService {
       return;
     }
     const filename = path.join(
-      this.config.get('MAIL_TEMPLATE_PATH'),
+      this.config.get('MAIL_TEMPLATE_PATH') || 'email-templates',
       `${message.template}.ejs`,
     );
 

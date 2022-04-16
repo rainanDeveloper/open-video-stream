@@ -99,7 +99,7 @@
       ".dto.ts",
       "main.ts"
     ],
-    "testPathIgnorePatterns" : [
+    "testPathIgnorePatterns": [
       "<rootDir>/common/services/mail/*"
     ],
     "moduleFileExtensions": [
