@@ -94,6 +94,7 @@
     "coveragePathIgnorePatterns": [
       "<rootDir>/migrations/*",
       "<rootDir>/common/services/mail/*",
+      "<rootDir>/common/jobs/send-mail/processors/*",
       ".module.ts",
       ".entity.ts",
       ".dto.ts",

@@ -1,8 +1,8 @@
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
-import { MailService } from 'src/common/services/mail/mail.service';
+import { MailService } from '../../../services/mail/mail.service';
 import { SendMailJobDto } from '../../dto/send-mail-job.dto';
-import { TemplateEmailMessage } from 'src/common/interfaces/IMailMessage.interface';
+import { TemplateEmailMessage } from '../../../interfaces/IMailMessage.interface';
 import {
   emailQueueJobs,
   emailQueueToken,

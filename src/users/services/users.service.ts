@@ -15,7 +15,7 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {
-    this.hashDifficulty = configService.get('HASH_DIFFICULTY') || 12;
+    this.hashDifficulty = this.configService.get('HASH_DIFFICULTY') || 12;
   }
 
   async createHash(password: string): Promise<string> {
