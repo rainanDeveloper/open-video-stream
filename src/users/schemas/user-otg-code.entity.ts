@@ -29,4 +29,13 @@ export class UserOtgCode {
 
   @Column()
   updated_at: Date;
+
+  constructor(userOtgCode?: Partial<UserOtgCode>) {
+    this.id = userOtgCode?.id;
+    this.email = userOtgCode?.email;
+    this.user = userOtgCode?.user;
+    this.otgCode = userOtgCode?.otgCode || Math.random().toString().slice(-6);
+    this.created_at = userOtgCode?.created_at || new Date();
+    this.updated_at = userOtgCode?.updated_at || new Date();
+  }
 }

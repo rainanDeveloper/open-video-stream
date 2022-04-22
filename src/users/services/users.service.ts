@@ -51,8 +51,9 @@ export class UsersService {
 
     userFinded.login = dto?.login || userFinded.login;
     userFinded.email = dto?.email || userFinded.email;
-    userFinded.password =
-      (await this.createHash(dto.password)) || userFinded.password;
+    userFinded.password = dto?.password
+      ? await this.createHash(dto.password)
+      : userFinded.password;
 
     return await this.userRepository.save(userFinded);
   }
