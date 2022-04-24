@@ -3,7 +3,7 @@
 <head>
 <title>Page Title</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;600;700;800&family=Source+Code+Pro:wght@200;300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@200;300;400;500;600&display=swap');
 
 body {
   text-align: center;
@@ -13,7 +13,7 @@ body {
 
 * {
   font-size: 18px;
-  font-family: 'Baloo 2', cursive;
+  font-family: 'Open Sans', sans-serif;
 }
 
 h1.titleApp {
@@ -48,7 +48,7 @@ span.otgCode {
 </head>
 <body>
 
-<h1 class="titleApp"><% context.app_name %> </h1>
+<h1 class="titleApp"><%= context.app_name %> </h1>
 
 <div class="content">
   
@@ -70,10 +70,10 @@ span.otgCode {
   </div>
   <h1>Verify your email to finish signing up</h1>
   
-  <p>Please <% context.login %>  confirm that <span class="emailContainer"><% context.email %></span> is your email address by copying the following one-time verification code, within 30 minutes:</p>
+  <p>Please <%= context.login %>, confirm that <span class="emailContainer"><%= context.email %></span> is your email address by copying the following one-time verification code, within 30 minutes:</p>
 
   <span class="otgCode">
-    <% content.otgCode %> 
+    <%= context.otgCode %> 
   </span>
 
   <p>After the next 30 minutes, if your account is not activated with this code, it will expire and you will have to request a new code</p>

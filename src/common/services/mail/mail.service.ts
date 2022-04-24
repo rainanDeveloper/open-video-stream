@@ -47,6 +47,7 @@ export class MailService {
       subject: message.subject,
       html: message.body,
     };
+
     return await this.transporter.sendMail(mailMessage);
   }
 
