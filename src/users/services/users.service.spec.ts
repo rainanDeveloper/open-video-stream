@@ -103,6 +103,40 @@ describe('UsersService', () => {
         email: userDto.email,
         password: expect.any(String),
       });
+      expect(configService.get).toHaveBeenCalledTimes(1);
+    });
+    it('should make sure that user email is lowercase', async () => {
+      // Arrange
+      const userDto: CreateUserDto = {
+        login: 'ZoiowByuis',
+        email: 'OLjakHJhjhg@yahoo.com',
+        password: 'D3SXf5Vr3dj79ccHPiSZ9',
+      };
+
+      // Act
+      const result: CreateUserDto = await userService.transformBody(userDto);
+
+      // Assert
+      expect(result.email).toEqual(userDto.email.toLowerCase());
+    });
+    it('should use default value for hash difficulty on hashing', async () => {
+      // Arrange
+      const userDto: CreateUserDto = {
+        login: 'ZoiowByuis',
+        email: 'ykoelpin@yahoo.com',
+        password: 'D3SXf5Vr3dj79ccHPiSZ9',
+      };
+      jest.spyOn(configService, 'get').mockReturnValue(null);
+      // Act
+      const result: CreateUserDto = await userService.transformBody(userDto);
+
+      // Assert
+      expect(result).toEqual({
+        login: userDto.login,
+        email: userDto.email,
+        password: expect.any(String),
+      });
+      expect(configService.get).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -153,6 +187,24 @@ describe('UsersService', () => {
       expect(result).toEqual(userList[0]);
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
       expect(userRepository.save).toHaveBeenCalledTimes(1);
+    });
+
+    it('should update successfuly a user even if update info is not informed (not modified)', async () => {
+      // Arrange
+      const updateUserDto: UpdateUserDto = {};
+      // Act
+      const result = await userService.update(userList[0].id, updateUserDto);
+      // Assert
+      expect(result).toEqual(userList[0]);
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(userRepository.save).toHaveBeenCalledTimes(1);
+
+      // Act
+      const result2 = await userService.update(userList[0].id, null);
+      // Assert
+      expect(result2).toEqual(userList[0]);
+      expect(userRepository.findOne).toHaveBeenCalledTimes(2);
+      expect(userRepository.save).toHaveBeenCalledTimes(2);
     });
 
     it('shoudl throw an error when method findOne on userRepository fails', () => {

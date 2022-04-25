@@ -4,10 +4,21 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
-import { UserController } from './user/user.controller';
+import { CommonModule } from './common/common.module';
+import { BullModule } from '@nestjs/bull';
 
 @Module({
   imports: [
+    BullModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        redis: {
+          host: configService.get('REDIS_HOST') || 'localhost',
+          port: Number(configService.get('REDIS_PORT')) || 6379,
+        },
+      }),
+      inject: [ConfigService],
+    }),
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
@@ -25,9 +36,10 @@ import { UserController } from './user/user.controller';
       },
       inject: [ConfigService],
     }),
+    CommonModule,
     UsersModule,
   ],
-  controllers: [AppController, UserController],
+  controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule {}

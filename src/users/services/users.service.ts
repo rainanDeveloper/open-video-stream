@@ -15,7 +15,7 @@ export class UsersService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {
-    this.hashDifficulty = configService.get('HASH_DIFFICULTY') || 12;
+    this.hashDifficulty = this.configService.get('HASH_DIFFICULTY') || 12;
   }
 
   async createHash(password: string): Promise<string> {
@@ -27,7 +27,7 @@ export class UsersService {
   async transformBody(dto: CreateUserDto): Promise<CreateUserDto> {
     const transformedDto: CreateUserDto = {
       login: dto.login,
-      email: dto.email,
+      email: dto.email.toLowerCase(),
       password: '',
     };
 
@@ -51,8 +51,9 @@ export class UsersService {
 
     userFinded.login = dto?.login || userFinded.login;
     userFinded.email = dto?.email || userFinded.email;
-    userFinded.password =
-      (await this.createHash(dto.password)) || userFinded.password;
+    userFinded.password = dto?.password
+      ? await this.createHash(dto.password)
+      : userFinded.password;
 
     return await this.userRepository.save(userFinded);
   }

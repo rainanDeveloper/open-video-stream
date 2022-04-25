@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Page Title</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Source+Code+Pro:wght@200;300;400;500;600&display=swap');
+
+body {
+  text-align: center;
+  background: white;
+  color: #232323;
+}
+
+* {
+  font-size: 18px;
+  font-family: 'Open Sans', sans-serif;
+}
+
+h1.titleApp {
+  border-bottom: solid 1px #ccc;
+  padding: 25px;
+  margin-bottom: 15px;
+  font-weight: 100;
+  font-size: 3em;
+}
+
+h1 {
+  font-size: 2em;
+  font-weight: 400;
+  padding: 0;
+  margin: 0;
+}
+
+span.emailContainer {
+  font-weight: 700;
+  color: #6797ec;
+}
+
+span.otgCode {
+  padding: 10px;
+  font-family: 'Source Code Pro', sans-serif;
+  font-size: 2em;
+  border-radius: 5px;
+  background-color: #e8e8e8;
+}
+
+</style>
+</head>
+<body>
+
+<h1 class="titleApp"><%= context.app_name %> </h1>
+
+<div class="content">
+  
+  <div class="centeredEmailImage">
+    <svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" width="150" height="110" viewBox="0 10 52.916665 44.916668" version="1.1" id="svg8">
+      <g id="layer1" transform="translate(0,-244.08332)">
+        <g id="g944" transform="rotate(23.263775,21.733787,284.89971)" style="stroke:#000000">
+          <g transform="translate(1.6180641,3.2361283)" id="g903" style="stroke:#000000">
+            <rect style="fill:#ffffff;stroke:#000000;stroke-width:1.06588709;stroke-miterlimit:4;stroke-dasharray:none" id="rect815" width="32.204849" height="17.197916" x="9.0223856" y="258.92087" rx="2.1469898" ry="2.1166666"/>
+            <path style="opacity:0.98000004;fill:#ffffff;stroke:#000000;stroke-width:1.25432754;stroke-miterlimit:4;stroke-dasharray:none" d="m 25.183784,265.39766 -15.7184199,9.57047 c 0.3143753,0.77368 1.0709119,1.31724 1.9600859,1.31724 h 27.516668 c 0.889184,0 1.645718,-0.54355 1.960087,-1.31724 z" id="rect817-7"/>
+            <path style="opacity:0.98000004;fill:#ffffff;stroke:#000000;stroke-width:1.25432754;stroke-miterlimit:4;stroke-dasharray:none" d="m 11.444008,258.75428 c -1.124122,0 -2.035728,0.86819 -2.1094303,1.97301 l 15.8677643,9.66142 15.867765,-9.66142 c -0.0737,-1.10482 -0.98531,-1.97301 -2.109432,-1.97301 z" id="rect817"/>
+          </g>
+          <path id="path905" d="M 8.0721714,265.00359 H -6.95271" style="fill:none;stroke:#000000;stroke-width:1.05833328;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+          <path id="path905-5" d="M 8.2454323,270.41751 H -3.3276226" style="fill:none;stroke:#000000;stroke-width:1.05833328;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+          <path id="path905-5-6" d="M 8.2238726,275.96515 H 0.49228503" style="fill:none;stroke:#000000;stroke-width:1.05833328;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"/>
+        </g>
+      </g>
+    </svg>
+  </div>
+  <h1>Verify your email to finish signing up</h1>
+  
+  <p>Please <%= context.login %>, confirm that <span class="emailContainer"><%= context.email %></span> is your email address by copying the following one-time verification code, within 30 minutes:</p>
+
+  <span class="otgCode">
+    <%= context.otgCode %> 
+  </span>
+
+  <p>After the next 30 minutes, if your account is not activated with this code, it will expire and you will have to request a new code</p>
+</div>
+
+</body>
+</html>
