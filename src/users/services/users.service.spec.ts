@@ -105,6 +105,20 @@ describe('UsersService', () => {
       });
       expect(configService.get).toHaveBeenCalledTimes(1);
     });
+    it('should make sure that user email is lowercase', async () => {
+      // Arrange
+      const userDto: CreateUserDto = {
+        login: 'ZoiowByuis',
+        email: 'OLjakHJhjhg@yahoo.com',
+        password: 'D3SXf5Vr3dj79ccHPiSZ9',
+      };
+
+      // Act
+      const result: CreateUserDto = await userService.transformBody(userDto);
+
+      // Assert
+      expect(result.email).toEqual(userDto.email.toLowerCase());
+    });
     it('should use default value for hash difficulty on hashing', async () => {
       // Arrange
       const userDto: CreateUserDto = {

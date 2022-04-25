@@ -27,7 +27,7 @@ export class UsersService {
   async transformBody(dto: CreateUserDto): Promise<CreateUserDto> {
     const transformedDto: CreateUserDto = {
       login: dto.login,
-      email: dto.email,
+      email: dto.email.toLowerCase(),
       password: '',
     };
 

@@ -4,4 +4,7 @@ export class CreateUserOtgCodeDto {
   @IsNotEmpty()
   @IsEmail()
   email: string;
+
+  @IsNotEmpty()
+  user: any;
 }

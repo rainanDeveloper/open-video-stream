@@ -27,7 +27,10 @@ export class UserConfirmationService {
   }
 
   async findOneByEmail(email: string): Promise<UserOtgCode> {
-    const otgCode = await this.userOtgCodeRepository.findOne({ email });
+    const otgCode = await this.userOtgCodeRepository.findOne(
+      { email },
+      { relations: ['user'] },
+    );
 
     if (!otgCode)
       throw new NotFoundException(`Otg Code for email ${email} not found!`);

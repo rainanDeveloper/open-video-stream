@@ -5,9 +5,13 @@ import { User } from '../schemas/user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UserConfirmationService } from '../services/user-confirmation.service';
 import { UserOtgCode } from '../schemas/user-otg-code.entity';
-import { InternalServerErrorException } from '@nestjs/common';
+import {
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { SendMailProducerService } from '../../common/jobs/send-mail/services/send-mail-producer.service';
 import { ConfigModule } from '@nestjs/config';
+import { ActivateUserDto } from '../dto/activate-user.dto';
 
 const userList: User[] = [
   new User({
@@ -52,15 +56,17 @@ describe('UsersController', () => {
           provide: UsersService,
           useValue: {
             create: jest.fn().mockResolvedValue(userList[0]),
+            update: jest.fn().mockResolvedValue(userList[0]),
+            findOne: jest.fn().mockResolvedValue(userList[0]),
           },
         },
         {
           provide: UserConfirmationService,
           useValue: {
-            create: jest.fn().mockResolvedValueOnce(userOtgCodeList[0]),
-            updateOtgCode: jest.fn().mockResolvedValueOnce(userOtgCodeList[0]),
-            findOneByEmail: jest.fn().mockResolvedValueOnce(userOtgCodeList[0]),
-            delete: jest.fn().mockResolvedValueOnce(userOtgCodeList[0]),
+            create: jest.fn().mockResolvedValue(userOtgCodeList[0]),
+            updateOtgCode: jest.fn().mockResolvedValue(userOtgCodeList[0]),
+            findOneByEmail: jest.fn().mockResolvedValue(userOtgCodeList[0]),
+            delete: jest.fn().mockResolvedValue(userOtgCodeList[0]),
           },
         },
         {
@@ -120,6 +126,58 @@ describe('UsersController', () => {
       expect(userController.create(userDto)).rejects.toThrow(
         InternalServerErrorException,
       );
+    });
+  });
+
+  describe('activateWithOtgCode', () => {
+    it('should activate a user successfully', async () => {
+      // Arrange
+      const activateUserDto: ActivateUserDto = {
+        email: userList[0].email,
+        otgCode: userOtgCodeList[0].otgCode,
+      };
+
+      // Act
+      await userController.activateWithOtgCode(activateUserDto);
+
+      // Assert
+      expect(userConfirmationService.findOneByEmail).toHaveBeenCalledTimes(1);
+      expect(userService.findOne).toHaveBeenCalledTimes(1);
+      expect(userService.update).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw a NotFoundException when findOneByEmail method on userConfirmationService throws a NotFoundException', async () => {
+      // Arrange
+      const activateUserDto: ActivateUserDto = {
+        email: userList[0].email,
+        otgCode: userOtgCodeList[0].otgCode,
+      };
+
+      jest
+        .spyOn(userConfirmationService, 'findOneByEmail')
+        .mockRejectedValueOnce(new NotFoundException());
+
+      // Assert
+      expect(
+        userController.activateWithOtgCode(activateUserDto),
+      ).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw a NotFoundException when findOne method on userService throws a NotFoundException', async () => {
+      // Arrange
+      const activateUserDto: ActivateUserDto = {
+        email: userList[0].email,
+        otgCode: userOtgCodeList[0].otgCode,
+      };
+
+      jest
+        .spyOn(userService, 'findOne')
+        .mockRejectedValueOnce(new NotFoundException());
+
+      // Assert
+      expect(
+        userController.activateWithOtgCode(activateUserDto),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 });
