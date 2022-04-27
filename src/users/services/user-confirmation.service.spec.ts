@@ -73,6 +73,7 @@ describe('UserConfirmationService', () => {
       // Arrange
       const userOtgDto: CreateUserOtgCodeDto = {
         email: userList[0].email,
+        user: userList[0],
       };
       // Act
       const otgCode = await userConfirmationService.create(userOtgDto);
@@ -86,6 +87,7 @@ describe('UserConfirmationService', () => {
       // Arrange
       const userOtgDto: CreateUserOtgCodeDto = {
         email: userList[0].email,
+        user: userList[0],
       };
 
       jest
