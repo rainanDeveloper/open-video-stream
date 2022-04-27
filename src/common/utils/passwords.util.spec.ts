@@ -33,4 +33,23 @@ describe('PasswordUtil', () => {
       expect(entropy).toEqual(precalculatedTestValue);
     });
   });
+
+  describe('verifyIfPasswordIsStrongEnough', () => {
+    it('should assert that password informed is strong enought (>47)', () => {
+      // Arrange
+      const password = '6Ht3AX8N';
+      // Act
+      const isStrong = passwordUtil.verifyIfPasswordIsStrongEnough(password);
+      // Assert
+      expect(isStrong).toBeTruthy();
+    });
+    it('should assert that password informed is not strong enought (<47)', () => {
+      // Arrange
+      const password = 'zieq7h2j';
+      // Act
+      const isStrong = passwordUtil.verifyIfPasswordIsStrongEnough(password);
+      // Assert
+      expect(isStrong).toBeFalsy();
+    });
+  });
 });

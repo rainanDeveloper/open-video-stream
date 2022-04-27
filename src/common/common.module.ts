@@ -6,6 +6,7 @@ import {
   SendMailProducerService,
 } from './jobs/send-mail/services/send-mail-producer.service';
 import { MailService } from './services/mail/mail.service';
+import { PasswordUtil } from './utils/passwords.util';
 
 @Global()
 @Module({
@@ -14,7 +15,17 @@ import { MailService } from './services/mail/mail.service';
       name: emailQueueToken,
     }),
   ],
-  providers: [MailService, SendMailProducerService, SendMailConsumerProcessor],
-  exports: [MailService, SendMailProducerService, SendMailConsumerProcessor],
+  providers: [
+    MailService,
+    SendMailProducerService,
+    SendMailConsumerProcessor,
+    PasswordUtil,
+  ],
+  exports: [
+    MailService,
+    SendMailProducerService,
+    SendMailConsumerProcessor,
+    PasswordUtil,
+  ],
 })
 export class CommonModule {}

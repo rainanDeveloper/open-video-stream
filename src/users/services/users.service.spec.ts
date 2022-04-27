@@ -8,6 +8,7 @@ import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { NotFoundException } from '@nestjs/common';
+import { PasswordUtil } from '../../common/utils/passwords.util';
 
 const userList: User[] = [
   new User({
@@ -32,6 +33,7 @@ describe('UsersService', () => {
   let userService: UsersService;
   let userRepository: Repository<User>;
   let configService: ConfigService;
+  let passwordUtil: PasswordUtil;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -52,18 +54,27 @@ describe('UsersService', () => {
             get: jest.fn().mockImplementation((key) => CONFIG_VALUES[key]),
           },
         },
+        {
+          provide: PasswordUtil,
+          useValue: {
+            verifyIfPasswordIsStrongEnough: jest.fn().mockReturnValue(true),
+            calculateEntropy: jest.fn().mockReturnValue(47.1),
+          },
+        },
       ],
     }).compile();
 
     userService = module.get<UsersService>(UsersService);
     userRepository = module.get<Repository<User>>(getRepositoryToken(User));
     configService = module.get<ConfigService>(ConfigService);
+    passwordUtil = module.get<PasswordUtil>(PasswordUtil);
   });
 
   it('should be defined', () => {
     expect(userService).toBeDefined();
     expect(userRepository).toBeDefined();
     expect(configService).toBeDefined();
+    expect(passwordUtil).toBeDefined();
   });
 
   describe('createHash', () => {
@@ -82,6 +93,20 @@ describe('UsersService', () => {
           await bcrypt.hashSync(password, CONFIG_VALUES.HASH_DIFFICULTY || 12)
         ).replace(/(\$\d\w)(\$\d+).+/g, '$1$2'),
       );
+    });
+  });
+
+  describe('validCreate', () => {
+    it('should validate user successfully', () => {
+      // Arrange
+      const userDto: CreateUserDto = {
+        login: 'Blezensk',
+        email: 'hauaigozlin@yahoo.com',
+        password: 'CvQ47WmVFF7HaGh8BkjLJFZU',
+      };
+
+      // Assert
+      expect(userService.validCreate(userDto)).toBeTruthy();
     });
   });
 
