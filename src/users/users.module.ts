@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './schemas/user.entity';
 import { UserOtgCode } from './schemas/user-otg-code.entity';
 import { UserConfirmationService } from './services/user-confirmation.service';
+import { UsersAuthController } from './controllers/users-auth.controller';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, UserOtgCode])],
   providers: [UsersService, UserConfirmationService],
-  controllers: [UsersController],
+  controllers: [UsersController, UsersAuthController],
 })
 export class UsersModule {}
