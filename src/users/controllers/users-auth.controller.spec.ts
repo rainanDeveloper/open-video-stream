@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../schemas/user.entity';
 import { UsersAuthController } from './users-auth.controller';
 import { UsersService } from '../services/users.service';
+import { LoginDto } from '../dto/login.dto';
 
 const userList: User[] = [
   new User({
@@ -35,8 +36,20 @@ describe('UsersAuthController', () => {
   });
 
   describe('login', () => {
-    it('should log in a user successfully', () => {
-      expect(true).toEqual(true);
+    it('should log in a user successfully', async () => {
+      // Arrange
+      const userLoginCredentialsDto: LoginDto = {
+        email: userList[0].email,
+        password: userList[0].password,
+      };
+
+      // Act
+      const authorization = await usersAuthController.login(
+        userLoginCredentialsDto,
+      );
+
+      // Assert
+      expect(authorization).toBeDefined();
     });
   });
 });
