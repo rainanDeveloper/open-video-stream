@@ -338,6 +338,28 @@ describe('UsersService', () => {
     });
   });
 
+  describe('findOneByEmail', () => {
+    it('should find a user by email sucessfully', async () => {
+      // Act
+      const user = await userService.findOneByEmail(userList[0].email);
+
+      // Assert
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(user).toEqual(userList[0]);
+    });
+
+    it('should throw a NotFoundException when the user is not finded by email', () => {
+      // Assert
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+      // Act
+      const result = userService.findOneByEmail('');
+
+      // Assert
+      expect(result).rejects.toThrow(NotFoundException);
+    });
+  });
+
   describe('delete', () => {
     it('should delete a user successfully', async () => {
       // Act

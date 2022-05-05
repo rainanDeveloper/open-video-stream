@@ -103,6 +103,15 @@ export class UsersService {
     return userFinded;
   }
 
+  async findOneByEmail(email: string): Promise<User> {
+    const userFinded = await this.userRepository.findOne({ email });
+
+    if (!userFinded)
+      throw new NotFoundException(`User with email ${email} not found!`);
+
+    return userFinded;
+  }
+
   async delete(id: number) {
     await this.findOne(id);
 
