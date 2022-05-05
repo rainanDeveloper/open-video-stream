@@ -1,8 +1,10 @@
+import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoginDto } from '../dto/login.dto';
 import { User } from '../schemas/user.entity';
 import { UsersAuthService } from './users-auth.service';
 import { UsersService } from './users.service';
+import * as crypto from 'crypto';
 
 const userList: User[] = [
   new User({
@@ -22,6 +24,7 @@ const userList: User[] = [
 describe('UsersAuthService', () => {
   let usersAuthService: UsersAuthService;
   let usersService: UsersService;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -34,16 +37,26 @@ describe('UsersAuthService', () => {
             comparePassword: jest.fn().mockResolvedValue(true),
           },
         },
+        {
+          provide: JwtService,
+          useValue: {
+            sign: jest
+              .fn()
+              .mockReturnValue(crypto.randomBytes(24).toString('base64')),
+          },
+        },
       ],
     }).compile();
 
     usersAuthService = module.get<UsersAuthService>(UsersAuthService);
     usersService = module.get<UsersService>(UsersService);
+    jwtService = module.get<JwtService>(JwtService);
   });
 
   it('should be defined', () => {
     expect(usersAuthService).toBeDefined();
     expect(usersService).toBeDefined();
+    expect(jwtService).toBeDefined();
   });
 
   describe('login', () => {
@@ -64,6 +77,7 @@ describe('UsersAuthService', () => {
       expect(authorization).toBeDefined();
       expect(authorization.jwt_password).toBeDefined();
       expect(typeof authorization.jwt_password).toEqual('string');
+      expect(jwtService.sign).toHaveBeenCalledTimes(1);
     });
   });
 });
