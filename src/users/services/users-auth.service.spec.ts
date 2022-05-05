@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { LoginDto } from '../dto/login.dto';
 import { User } from '../schemas/user.entity';
 import { UsersAuthService } from './users-auth.service';
+import { UsersService } from './users.service';
 
 const userList: User[] = [
   new User({
@@ -20,17 +21,29 @@ const userList: User[] = [
 
 describe('UsersAuthService', () => {
   let usersAuthService: UsersAuthService;
+  let usersService: UsersService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersAuthService],
+      providers: [
+        UsersAuthService,
+        {
+          provide: UsersService,
+          useValue: {
+            findOneByEmail: jest.fn().mockResolvedValue(userList[0]),
+            comparePassword: jest.fn().mockResolvedValue(true),
+          },
+        },
+      ],
     }).compile();
 
     usersAuthService = module.get<UsersAuthService>(UsersAuthService);
+    usersService = module.get<UsersService>(UsersService);
   });
 
   it('should be defined', () => {
     expect(usersAuthService).toBeDefined();
+    expect(usersService).toBeDefined();
   });
 
   describe('login', () => {
@@ -46,7 +59,11 @@ describe('UsersAuthService', () => {
         userLoginCredentialsDto,
       );
       // Assert
+      expect(usersService.findOneByEmail).toHaveBeenCalledTimes(1);
+      expect(usersService.comparePassword).toHaveBeenCalledTimes(1);
       expect(authorization).toBeDefined();
+      expect(authorization.jwt_password).toBeDefined();
+      expect(typeof authorization.jwt_password).toEqual('string');
     });
   });
 });
