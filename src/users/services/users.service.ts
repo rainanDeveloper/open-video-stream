@@ -36,6 +36,10 @@ export class UsersService {
     return hash;
   }
 
+  async comparePassword(password: string, hash: string): Promise<boolean> {
+    return await bcrypt.compareSync(password, hash);
+  }
+
   async transformBody(dto: CreateUserDto): Promise<CreateUserDto> {
     const transformedDto: CreateUserDto = {
       login: dto.login,
