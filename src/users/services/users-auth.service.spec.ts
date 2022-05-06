@@ -5,6 +5,7 @@ import { User } from '../schemas/user.entity';
 import { UsersAuthService } from './users-auth.service';
 import { UsersService } from './users.service';
 import * as crypto from 'crypto';
+import { NotFoundException, UnauthorizedException } from '@nestjs/common';
 
 const userList: User[] = [
   new User({
@@ -75,9 +76,41 @@ describe('UsersAuthService', () => {
       expect(usersService.findOneByEmail).toHaveBeenCalledTimes(1);
       expect(usersService.comparePassword).toHaveBeenCalledTimes(1);
       expect(authorization).toBeDefined();
-      expect(authorization.jwt_password).toBeDefined();
-      expect(typeof authorization.jwt_password).toEqual('string');
+      expect(authorization.jwt_token).toBeDefined();
+      expect(typeof authorization.jwt_token).toEqual('string');
       expect(jwtService.sign).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw an NotFoundException when the method "findOneByEmail" on usersService throws a UnauthorizedException', () => {
+      // Arrange
+      jest
+        .spyOn(usersService, 'findOneByEmail')
+        .mockRejectedValueOnce(new NotFoundException());
+      const userLoginCredentialsDto: LoginDto = {
+        email: userList[0].email,
+        password: userList[0].password,
+      };
+
+      // Act
+      const resultPromise = usersAuthService.login(userLoginCredentialsDto);
+
+      // Assert
+      expect(resultPromise).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('should throw an UnauthorizedException when method "comparePassword" on usersService returns false', () => {
+      // Arrange
+      jest.spyOn(usersService, 'comparePassword').mockResolvedValue(false);
+      const userLoginCredentialsDto: LoginDto = {
+        email: userList[0].email,
+        password: userList[0].password,
+      };
+
+      // Act
+      const resultPromise = usersAuthService.login(userLoginCredentialsDto);
+
+      // Assert
+      expect(resultPromise).rejects.toThrow(UnauthorizedException);
     });
   });
 });
