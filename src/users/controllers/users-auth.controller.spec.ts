@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../schemas/user.entity';
 import { UsersAuthController } from './users-auth.controller';
+import * as crypto from 'crypto';
 import { UsersService } from '../services/users.service';
 import { LoginDto } from '../dto/login.dto';
+import { UsersAuthService } from '../services/users-auth.service';
 
 const userList: User[] = [
   new User({
@@ -21,18 +23,30 @@ const userList: User[] = [
 
 describe('UsersAuthController', () => {
   let usersAuthController: UsersAuthController;
+  let usersAuthService: UsersAuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UsersAuthController],
-      providers: [{ provide: UsersService, useValue: {} }],
+      providers: [
+        {
+          provide: UsersAuthService,
+          useValue: {
+            login: jest.fn().mockResolvedValue({
+              jwt_token: crypto.randomBytes(24).toString('base64'),
+            }),
+          },
+        },
+      ],
     }).compile();
 
     usersAuthController = module.get<UsersAuthController>(UsersAuthController);
+    usersAuthService = module.get<UsersAuthService>(UsersAuthService);
   });
 
   it('should be defined', () => {
     expect(usersAuthController).toBeDefined();
+    expect(usersAuthService).toBeDefined();
   });
 
   describe('login', () => {
@@ -49,7 +63,9 @@ describe('UsersAuthController', () => {
       );
 
       // Assert
+      expect(usersAuthService.login).toHaveBeenCalledTimes(1);
       expect(authorization).toBeDefined();
+      expect(authorization.jwt_token).toBeDefined();
     });
   });
 });
