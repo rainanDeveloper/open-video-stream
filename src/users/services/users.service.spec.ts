@@ -5,6 +5,7 @@ import { User } from '../schemas/user.entity';
 import { UsersService } from './users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { NotFoundException } from '@nestjs/common';
@@ -93,6 +94,31 @@ describe('UsersService', () => {
           await bcrypt.hashSync(password, CONFIG_VALUES.HASH_DIFFICULTY || 12)
         ).replace(/(\$\d\w)(\$\d+).+/g, '$1$2'),
       );
+    });
+  });
+
+  describe('comparePassword', () => {
+    it('should compare password with bcrypt hash sucessfully and return true', async () => {
+      // Arrange
+      const password = 'iNBtHQwBrCXaap2BKfnmUPCb';
+      const hash: string = await userService.createHash(password);
+
+      // Act
+      const result = await userService.comparePassword(password, hash);
+      // Assert
+      expect(result).toBeTruthy();
+    });
+
+    it('should compare password with bcrypt hash successsfully and return false', async () => {
+      // Arrange
+      const password = '8WSBjMR5Dy6JXaTFYWzWmgVr';
+      const hash = crypto.randomBytes(24).toString('base64');
+
+      // Act
+      const result = await userService.comparePassword(password, hash);
+
+      // Assert
+      expect(result).toBeFalsy();
     });
   });
 
@@ -309,6 +335,28 @@ describe('UsersService', () => {
         NotFoundException,
       );
       expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('findOneByEmail', () => {
+    it('should find a user by email sucessfully', async () => {
+      // Act
+      const user = await userService.findOneByEmail(userList[0].email);
+
+      // Assert
+      expect(userRepository.findOne).toHaveBeenCalledTimes(1);
+      expect(user).toEqual(userList[0]);
+    });
+
+    it('should throw a NotFoundException when the user is not finded by email', () => {
+      // Assert
+      jest.spyOn(userRepository, 'findOne').mockResolvedValue(null);
+
+      // Act
+      const result = userService.findOneByEmail('');
+
+      // Assert
+      expect(result).rejects.toThrow(NotFoundException);
     });
   });
 

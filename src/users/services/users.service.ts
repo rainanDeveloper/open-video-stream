@@ -36,6 +36,10 @@ export class UsersService {
     return hash;
   }
 
+  async comparePassword(password: string, hash: string): Promise<boolean> {
+    return await bcrypt.compareSync(password, hash);
+  }
+
   async transformBody(dto: CreateUserDto): Promise<CreateUserDto> {
     const transformedDto: CreateUserDto = {
       login: dto.login,
@@ -95,6 +99,15 @@ export class UsersService {
     const userFinded = await this.userRepository.findOne(id);
 
     if (!userFinded) throw new NotFoundException(`User ${id} not found!`);
+
+    return userFinded;
+  }
+
+  async findOneByEmail(email: string): Promise<User> {
+    const userFinded = await this.userRepository.findOne({ email });
+
+    if (!userFinded)
+      throw new NotFoundException(`User with email ${email} not found!`);
 
     return userFinded;
   }
