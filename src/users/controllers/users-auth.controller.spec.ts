@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '../schemas/user.entity';
 import { UsersAuthController } from './users-auth.controller';
 import * as crypto from 'crypto';
-import { UsersService } from '../services/users.service';
 import { LoginDto } from '../dto/login.dto';
 import { UsersAuthService } from '../services/users-auth.service';
+import { UnauthorizedException } from '@nestjs/common';
 
 const userList: User[] = [
   new User({
@@ -66,6 +66,23 @@ describe('UsersAuthController', () => {
       expect(usersAuthService.login).toHaveBeenCalledTimes(1);
       expect(authorization).toBeDefined();
       expect(authorization.jwt_token).toBeDefined();
+    });
+
+    it('should throw an UnauthorizedException when method "login" on usersAuthService throws UnauthorizedException', () => {
+      // Arrange
+      const userLoginCredentialsDto: LoginDto = {
+        email: userList[0].email,
+        password: userList[0].password,
+      };
+      jest
+        .spyOn(usersAuthService, 'login')
+        .mockRejectedValueOnce(new UnauthorizedException());
+
+      // Act
+      const resultPromise = usersAuthController.login(userLoginCredentialsDto);
+
+      // Assert
+      expect(resultPromise).rejects.toThrow(UnauthorizedException);
     });
   });
 });
