@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { CommonModule } from './common/common.module';
 import { BullModule } from '@nestjs/bull';
+import { VideoModule } from './video/video.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { BullModule } from '@nestjs/bull';
     }),
     CommonModule,
     UsersModule,
+    VideoModule,
   ],
   controllers: [AppController],
   providers: [AppService],
